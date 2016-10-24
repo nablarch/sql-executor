@@ -1,0 +1,17 @@
+/bin/
+/target/
+/app.log
+/sql.log
+
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+
+*.iml
+
+## Directory-based project format:
+.idea/
+
+
+/.settings/
+/.classpath
+/.project

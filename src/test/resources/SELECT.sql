@@ -1,0 +1,3 @@
+-- ソートのテスト
+SELECT_TEST=
+SELECT NOW()

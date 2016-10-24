@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.nablarch.tool</groupId>
+  <artifactId>sql-executor</artifactId>
+  <version>1.0.1</version>
+  <packaging>jar</packaging>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.nablarch.profile</groupId>
+        <artifactId>nablarch-bom</artifactId>
+        <version>5u6</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.nablarch.profile</groupId>
+      <artifactId>nablarch-all-in-one</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.nablarch.configuration</groupId>
+      <artifactId>nablarch-main-default-configuration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.nablarch.framework</groupId>
+      <artifactId>nablarch-testing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.nablarch.framework</groupId>
+      <artifactId>nablarch-backward-compatibility</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.4</version>
+      <scope>runtime</scope>
+    </dependency>
+
+<!-- 使用するRDBMSにあわせて、下記JDBCドライバの dependency を更新してください。 -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.3.176</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <mainClass>nablarch.fw.launcher.Main</mainClass>
+          <arguments>
+            <argument>-diConfig</argument>
+            <argument>classpath:config.xml</argument>
+            <argument>-requestPath</argument>
+            <argument>nse</argument>
+            <argument>-userId</argument>
+            <argument>testUser</argument>
+            <argument>-g</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
