@@ -110,8 +110,8 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * list サブコマンド。
      * 指定したディレクトリ配下のSQLファイルの一覧と、各SQLファイル内のSQLステートメント名の一覧を表示する。
-     * @param commandline コマンドラインオブジェクト
-     * @param ctx 実行コンテキスト
+     * @param opts オプション
+     * @param args 引数のリスト
      * @return ステータスコード
      */
     public Integer list(Map<String, String> opts, List<String> args) {
@@ -131,8 +131,8 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * show サブコマンド。
      * 指定したSQLファイル中のステートメントの一覧、もしくはステートメントの内容を表示する。
-     * @param commandline コマンドラインオブジェクト
-     * @param ctx 実行コンテキスト
+     * @param opts オプション
+     * @param args 引数のリスト
      * @return ステータスコード
      */
     public Integer show(Map<String, String> opts, List<String> args) {
@@ -157,8 +157,8 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * exec サブコマンド。
      * SQLファイル内の指定したステートメントを実行する。
-     * @param commandline コマンドラインオブジェクト
-     * @param ctx 実行コンテキスト
+     * @param opts オプション
+     * @param args 引数のリスト
      * @return ステータスコード
      */
     public Integer exec(Map<String, String> opts, List<String> args) {
@@ -190,8 +190,8 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * run サブコマンド。
      * 任意のSQL文を実行する。
-     * @param commandline コマンドラインオブジェクト
-     * @param ctx 実行コンテキスト
+     * @param opts オプション
+     * @param args 引数のリスト
      * @return ステータスコード
      */
     public Integer run(Map<String, String> opts, List<String> args) {
@@ -205,9 +205,9 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * gui サブコマンド
      * WEBベースのフロントエンドを起動する。
-     * @param opts
-     * @param args
-     * @return
+     * @param opts オプション
+     * @param args 引数のリスト
+     * @return ステータスコード
      */
     public Integer launchGui(Map<String, String> opts, List<String> args) {
         emit("");
@@ -242,8 +242,8 @@ public class SqlExecutor implements Handler<Object, Object> {
     /**
      * usage サブコマンド。
      * 簡単な使用方法を表示する。
-     * @param commandline コマンドラインオブジェクト
-     * @param ctx 実行コンテキスト
+     * @param opts オプション
+     * @param args 引数のリスト
      * @return ステータスコード
      */
     public Integer usage(Map<String, String> opts, List<String> args) {

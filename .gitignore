@@ -15,3 +15,5 @@
 /.settings/
 /.classpath
 /.project
+
+h2/db/*.db
