@@ -62,25 +62,25 @@ public class SqlExecutor implements Handler<Object, Object> {
             HttpRequest request = (HttpRequest) input;
             HttpResponse response = new HttpResponse();
             args = Arrays.asList(
-                    (request.getParam("args") == null) ? new String[0]
-                            : request.getParam("args")
-            );
+                       (request.getParam("args") == null) ? new String[0]
+                                                          : request.getParam("args")
+                   );
             opts = new HashMap<String, String>();
             for (Map.Entry<String, String[]> entry : request.getParamMap().entrySet()) {
                 opts.put(entry.getKey(), entry.getValue()[0]);
             }
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             try {
-                out = new PrintStream(buffer, false, "UTF-8");
-                err = new PrintStream(buffer, false, "UTF-8");
+            out = new PrintStream(buffer, false, "UTF-8");
+            err = new PrintStream(buffer, false, "UTF-8");
             } catch (UnsupportedEncodingException neverHappen) {
                 // nothing to do with it.
             }
             Integer resultCode = main(opts, args);
             return response
-                    .write(buffer.toByteArray())
-                    .setContentType("text/plain; charset=UTF-8")
-                    .setStatusCode((resultCode == 0) ? 200 : 400);
+                  .write(buffer.toByteArray())
+                  .setContentType("text/plain; charset=UTF-8")
+                  .setStatusCode((resultCode == 0) ? 200 : 400);
         }
 
         throw new IllegalStateException();
@@ -90,7 +90,7 @@ public class SqlExecutor implements Handler<Object, Object> {
         Integer result;
 
         try {
-            result = opts.containsKey("l") ? list(opts, args)
+             result = opts.containsKey("l") ? list(opts, args)
                     : opts.containsKey("s") ? show(opts, args)
                     : opts.containsKey("e") ? exec(opts, args)
                     : opts.containsKey("h") ? usage(opts, args)
@@ -215,26 +215,26 @@ public class SqlExecutor implements Handler<Object, Object> {
         emit("");
 
         new HttpServer()
-                .setServletContextPath("/")
-                .setPort(7979)
-                .setWarBasePath("classpath://gui/")
-                .addHandler(new GlobalErrorHandler())
-                .addHandler(new HttpErrorHandler()
-                        .setDefaultPage("5..", "servlet:///error.html")
-                        .setDefaultPage("4..", "servlet:///error.html"))
-                .addHandler(SystemRepository.getObject("dbConnectionManagementHandler"))
-                .addHandler(SystemRepository.getObject("transactionManagementHandler"))
-                .addHandler("/index.html", new Handler<HttpRequest, HttpResponse>() {
-                    @Override
-                    public HttpResponse handle(HttpRequest req, ExecutionContext res) {
-                        return new HttpResponse(200, "servlet:///index.html")
-                                .setContentType("text/html; charset=UTF-8");
-                    }
-                })
-                .addHandler("/api", new SqlExecutor())
-                .addHandler("/", new ResourceMapping("/", "servlet:///"))
-                .start()
-                .join();
+        .setServletContextPath("/")
+        .setPort(7979)
+        .setWarBasePath("classpath://gui/")
+        .addHandler(new GlobalErrorHandler())
+        .addHandler(new HttpErrorHandler()
+                            .setDefaultPage("5..", "servlet:///error.html")
+                            .setDefaultPage("4..", "servlet:///error.html"))
+        .addHandler(SystemRepository.getObject("dbConnectionManagementHandler"))
+        .addHandler(SystemRepository.getObject("transactionManagementHandler"))
+        .addHandler("/index.html", new Handler<HttpRequest, HttpResponse>() {
+            @Override
+            public HttpResponse handle(HttpRequest req, ExecutionContext res) {
+                return new HttpResponse(200, "servlet:///index.html")
+                        .setContentType("text/html; charset=UTF-8");
+            }
+        })
+        .addHandler("/api", new SqlExecutor())
+        .addHandler("/", new ResourceMapping("/", "servlet:///"))
+        .start()
+        .join();
 
         return 0;
     }
@@ -276,10 +276,10 @@ public class SqlExecutor implements Handler<Object, Object> {
     //------ list サブコマンドの実装 ------------//
     private void listSqlFiles(File target) {
         if (target.isDirectory()) {
-            listSqlFilesInDir(target);
+          listSqlFilesInDir(target);
         }
         else if (target.isFile() && target.getName().endsWith(".sql")) {
-            showSqlFile(target);
+          showSqlFile(target);
         }
     }
 
@@ -442,7 +442,7 @@ public class SqlExecutor implements Handler<Object, Object> {
                 String val  = String.valueOf(col.getValue());
 
                 values.append(pad(val, colLength.get(name), ' '))
-                        .append(" ");
+                      .append(" ");
             }
             emit(values.toString());
         }
@@ -451,27 +451,27 @@ public class SqlExecutor implements Handler<Object, Object> {
 
     private Object evalParam(String literal) {
         if (literal.equals("SYSDATE")) {
-            return new java.sql.Date(System.currentTimeMillis());
+           return new java.sql.Date(System.currentTimeMillis());
         }
         Matcher m = DATE_LITERAL.matcher(literal);
         if (m.matches()) {
-            int year  = Integer.valueOf(m.group(1));
-            int month = Integer.valueOf(m.group(2)) -1;
-            int day   = Integer.valueOf(m.group(3));
+             int year  = Integer.valueOf(m.group(1));
+             int month = Integer.valueOf(m.group(2)) -1;
+             int day   = Integer.valueOf(m.group(3));
 
-            if (m.group(4) != null) {
-                int hour = Integer.valueOf(m.group(4));
-                int min  = Integer.valueOf(m.group(5));
-                int sec  = Integer.valueOf(m.group(6));
-                return new java.sql.Date(
-                        new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
-                );
-            }
-            else {
-                return new java.sql.Date(
-                        new GregorianCalendar(year, month, day).getTimeInMillis()
-                );
-            }
+             if (m.group(4) != null) {
+                 int hour = Integer.valueOf(m.group(4));
+                 int min  = Integer.valueOf(m.group(5));
+                 int sec  = Integer.valueOf(m.group(6));
+                 return new java.sql.Date(
+                     new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
+                 );
+             }
+             else {
+                 return new java.sql.Date(
+                     new GregorianCalendar(year, month, day).getTimeInMillis()
+                 );
+             }
         }
 
         if (isArrayLiteral(literal)) {
@@ -514,7 +514,7 @@ public class SqlExecutor implements Handler<Object, Object> {
     }
 
     private static Pattern DATE_LITERAL = Pattern.compile(
-            "(\\d{4})-(\\d{1,2})-(\\d{1,2})(?:(?:\\s|T)(\\d{1,2})\\:(\\d{1,2})\\:(\\d{1,2}))?"
+        "(\\d{4})-(\\d{1,2})-(\\d{1,2})(?:(?:\\s|T)(\\d{1,2})\\:(\\d{1,2})\\:(\\d{1,2}))?"
     );
 
 
@@ -531,9 +531,9 @@ public class SqlExecutor implements Handler<Object, Object> {
         // 文字列リテラル中に:とか$がある可能性があるので、文字列リテラルを取り除く。
         String exceptStringLiteral = sql.replaceAll("'[^']*'", "");
         for (Pattern e : KEYWORD_PATTERNS) {
-            if (e.matcher(exceptStringLiteral).find()) {
-                return true;
-            }
+             if (e.matcher(exceptStringLiteral).find()) {
+                 return true;
+             }
         }
         return false;
     }
