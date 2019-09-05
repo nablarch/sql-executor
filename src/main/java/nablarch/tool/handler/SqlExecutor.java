@@ -24,6 +24,7 @@ import nablarch.core.db.statement.ParameterizedSqlPStatement;
 import nablarch.core.db.statement.SqlPStatement;
 import nablarch.core.db.statement.SqlResultSet;
 import nablarch.core.db.statement.SqlRow;
+import nablarch.core.exception.IllegalConfigurationException;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.Builder;
 import nablarch.core.util.FileUtil;
@@ -34,7 +35,7 @@ import nablarch.fw.handler.GlobalErrorHandler;
 import nablarch.fw.launcher.CommandLine;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.HttpResponse;
-import nablarch.fw.web.HttpServer;
+import nablarch.fw.web.HttpServerFactory;
 import nablarch.fw.web.handler.HttpErrorHandler;
 import nablarch.fw.web.handler.ResourceMapping;
 
@@ -214,7 +215,12 @@ public class SqlExecutor implements Handler<Object, Object> {
         emit("Open the page [http://localhost:7979/index.html] in your browser.");
         emit("");
 
-        new HttpServer()
+        HttpServerFactory factory = SystemRepository.get("httpServerFactory");
+        if (factory == null) {
+            throw new IllegalConfigurationException("could not find component. name=[httpServerFactory].");
+        }
+
+        factory.create()
         .setServletContextPath("/")
         .setPort(7979)
         .setWarBasePath("classpath://gui/")

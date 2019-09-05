@@ -35,6 +35,10 @@
     </dependency>
     <dependency>
       <groupId>com.nablarch.framework</groupId>
+      <artifactId>nablarch-testing-jetty6</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.nablarch.framework</groupId>
       <artifactId>nablarch-backward-compatibility</artifactId>
     </dependency>
     <dependency>
