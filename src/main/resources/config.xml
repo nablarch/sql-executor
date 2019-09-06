@@ -39,4 +39,6 @@
     </property>
   </component>
 
+  <component name="httpServerFactory" class="nablarch.fw.web.httpserver.HttpServerFactoryJetty6"/>
+
 </component-configuration>
