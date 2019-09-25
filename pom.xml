@@ -5,7 +5,7 @@
 
   <groupId>com.nablarch.tool</groupId>
   <artifactId>sql-executor</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
 
   <scm>
@@ -17,7 +17,7 @@
   <parent>
     <groupId>com.nablarch</groupId>
     <artifactId>nablarch-parent</artifactId>
-    <version>5u15-SNAPSHOT</version>
+    <version>5u15</version>
   </parent>
 
   <dependencies>
