@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,19 @@ import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.HttpServerFactory;
 import nablarch.fw.web.handler.HttpErrorHandler;
 import nablarch.fw.web.handler.ResourceMapping;
+import nablarch.fw.web.servlet.WebFrontController;
+import org.eclipse.jetty.server.HandlerContainer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.FilterMapping;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.util.resource.Resource;
 
+import javax.servlet.DispatcherType;
 
 public class SqlExecutor implements Handler<Object, Object> {
 
@@ -220,27 +233,43 @@ public class SqlExecutor implements Handler<Object, Object> {
             throw new IllegalConfigurationException("could not find component. name=[httpServerFactory].");
         }
 
-        factory.create()
-        .setServletContextPath("/")
-        .setPort(7979)
-        .setWarBasePath("classpath://gui/")
-        .addHandler(new GlobalErrorHandler())
-        .addHandler(new HttpErrorHandler()
-                            .setDefaultPage("5..", "servlet:///error.html")
-                            .setDefaultPage("4..", "servlet:///error.html"))
-        .addHandler(SystemRepository.getObject("dbConnectionManagementHandler"))
-        .addHandler(SystemRepository.getObject("transactionManagementHandler"))
-        .addHandler("/index.html", new Handler<HttpRequest, HttpResponse>() {
-            @Override
-            public HttpResponse handle(HttpRequest req, ExecutionContext res) {
-                return new HttpResponse(200, "servlet:///index.html")
-                        .setContentType("text/html; charset=UTF-8");
-            }
-        })
-        .addHandler("/api", new SqlExecutor())
-        .addHandler("/", new ResourceMapping("/", "servlet:///"))
-        .start()
-        .join();
+        WebFrontController webFrontController = SystemRepository.get("webFrontController");
+        Server server = new Server(7979);
+
+        ServletContextHandler servletContextHandler = new ServletContextHandler(
+                ServletContextHandler.SESSIONS
+        );
+
+
+        servletContextHandler.setContextPath("/api");
+
+        FilterHolder filterHolder = new FilterHolder();
+        filterHolder.setFilter(webFrontController);
+        EnumSet<DispatcherType> enumSet = EnumSet.of(DispatcherType.REQUEST);
+        servletContextHandler.addFilter(filterHolder, "/*", enumSet);
+
+
+
+
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setBaseResource(Resource.newClassPathResource("/gui"));
+
+        ContextHandler contextHandler = new ContextHandler("/"); /* the server uri path */
+        contextHandler.setHandler(resourceHandler);
+
+
+        HandlerList handlerList = new HandlerList();
+        handlerList.addHandler(servletContextHandler);
+        handlerList.addHandler(contextHandler);
+        server.setHandler(handlerList);
+
+        try {
+            server.start();
+            server.join();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return 0;
     }
