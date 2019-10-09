@@ -80,6 +80,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.1.1</version>
         <executions>
+          <!-- jarを生成する -->
           <execution>
             <id>make-executable-jar</id>
             <phase>package</phase>
@@ -100,6 +101,7 @@
             </configuration>
           </execution>
 
+          <!-- jar, batが含まれたzipを生成する -->
           <execution>
             <id>make-zip</id>
             <phase>package</phase>
@@ -107,6 +109,7 @@
               <goal>single</goal>
             </goals>
             <configuration>
+              <finalName>${project.artifactId}</finalName>
               <descriptors>
                 <descriptor>src/assembly/distribution.xml</descriptor>
               </descriptors>
