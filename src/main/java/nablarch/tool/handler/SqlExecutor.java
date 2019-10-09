@@ -228,42 +228,30 @@ public class SqlExecutor implements Handler<Object, Object> {
         emit("Open the page [http://localhost:7979/index.html] in your browser.");
         emit("");
 
-        HttpServerFactory factory = SystemRepository.get("httpServerFactory");
-        if (factory == null) {
-            throw new IllegalConfigurationException("could not find component. name=[httpServerFactory].");
-        }
-
-        WebFrontController webFrontController = SystemRepository.get("webFrontController");
         Server server = new Server(7979);
 
-        ServletContextHandler servletContextHandler = new ServletContextHandler(
-                ServletContextHandler.SESSIONS
-        );
-
-
+        // /apiにNablarchのハンドラをマッピングする
+        ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContextHandler.setContextPath("/api");
-
         FilterHolder filterHolder = new FilterHolder();
+        WebFrontController webFrontController = SystemRepository.get("webFrontController");
         filterHolder.setFilter(webFrontController);
         EnumSet<DispatcherType> enumSet = EnumSet.of(DispatcherType.REQUEST);
         servletContextHandler.addFilter(filterHolder, "/*", enumSet);
 
-
-
-
-
+        // /にorg.eclipse.jetty.server.handler.ResourceHandlerをマッピングする
+        ContextHandler contextHandler = new ContextHandler("/"); /* the server uri path */
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setBaseResource(Resource.newClassPathResource("/gui"));
-
-        ContextHandler contextHandler = new ContextHandler("/"); /* the server uri path */
         contextHandler.setHandler(resourceHandler);
 
-
+        // マッピングをまとめてServerに設定する
         HandlerList handlerList = new HandlerList();
         handlerList.addHandler(servletContextHandler);
         handlerList.addHandler(contextHandler);
         server.setHandler(handlerList);
 
+        // サーバを起動
         try {
             server.start();
             server.join();
