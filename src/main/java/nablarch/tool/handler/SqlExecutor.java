@@ -1,5 +1,30 @@
 package nablarch.tool.handler;
 
+import nablarch.core.db.connection.AppDbConnection;
+import nablarch.core.db.connection.DbConnectionContext;
+import nablarch.core.db.statement.ParameterizedSqlPStatement;
+import nablarch.core.db.statement.SqlPStatement;
+import nablarch.core.db.statement.SqlResultSet;
+import nablarch.core.db.statement.SqlRow;
+import nablarch.core.repository.SystemRepository;
+import nablarch.core.util.Builder;
+import nablarch.core.util.FileUtil;
+import nablarch.core.util.JapaneseCharsetUtil;
+import nablarch.fw.ExecutionContext;
+import nablarch.fw.Handler;
+import nablarch.fw.launcher.CommandLine;
+import nablarch.fw.web.HttpRequest;
+import nablarch.fw.web.HttpResponse;
+import nablarch.fw.web.servlet.WebFrontController;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.resource.Resource;
+
+import javax.servlet.DispatcherType;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,40 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import nablarch.core.db.connection.AppDbConnection;
-import nablarch.core.db.connection.DbConnectionContext;
-import nablarch.core.db.statement.ParameterizedSqlPStatement;
-import nablarch.core.db.statement.SqlPStatement;
-import nablarch.core.db.statement.SqlResultSet;
-import nablarch.core.db.statement.SqlRow;
-import nablarch.core.exception.IllegalConfigurationException;
-import nablarch.core.repository.SystemRepository;
-import nablarch.core.util.Builder;
-import nablarch.core.util.FileUtil;
-import nablarch.core.util.JapaneseCharsetUtil;
-import nablarch.fw.ExecutionContext;
-import nablarch.fw.Handler;
-import nablarch.fw.handler.GlobalErrorHandler;
-import nablarch.fw.launcher.CommandLine;
-import nablarch.fw.web.HttpRequest;
-import nablarch.fw.web.HttpResponse;
-import nablarch.fw.web.HttpServerFactory;
-import nablarch.fw.web.handler.HttpErrorHandler;
-import nablarch.fw.web.handler.ResourceMapping;
-import nablarch.fw.web.servlet.WebFrontController;
-import org.eclipse.jetty.server.HandlerContainer;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.FilterMapping;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.util.resource.Resource;
-
-import javax.servlet.DispatcherType;
 
 public class SqlExecutor implements Handler<Object, Object> {
 
@@ -230,19 +221,19 @@ public class SqlExecutor implements Handler<Object, Object> {
 
         Server server = new Server(7979);
 
-        // /apiにNablarchのハンドラをマッピングする
+        // '/api'にNablarchのハンドラをマッピングする
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContextHandler.setContextPath("/api");
         FilterHolder filterHolder = new FilterHolder();
-        WebFrontController webFrontController = SystemRepository.get("webFrontController");
-        filterHolder.setFilter(webFrontController);
-        EnumSet<DispatcherType> enumSet = EnumSet.of(DispatcherType.REQUEST);
-        servletContextHandler.addFilter(filterHolder, "/*", enumSet);
+        WebFrontController nablarchServletFilter = SystemRepository.get("webFrontController");
+        filterHolder.setFilter(nablarchServletFilter);
+        EnumSet<DispatcherType> dispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
+        servletContextHandler.addFilter(filterHolder, "/*", dispatcherTypes);
 
-        // /にorg.eclipse.jetty.server.handler.ResourceHandlerをマッピングする
-        ContextHandler contextHandler = new ContextHandler("/"); /* the server uri path */
+        // '/'にorg.eclipse.jetty.server.handler.ResourceHandlerをマッピングする
+        ContextHandler contextHandler = new ContextHandler("/");
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setBaseResource(Resource.newClassPathResource("/gui"));
+        resourceHandler.setBaseResource(Resource.newClassPathResource("/gui"));   // src/main/resources/guiのコンテンツを配信
         contextHandler.setHandler(resourceHandler);
 
         // マッピングをまとめてServerに設定する
