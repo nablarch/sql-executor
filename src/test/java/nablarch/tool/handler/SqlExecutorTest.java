@@ -1,9 +1,9 @@
 package nablarch.tool.handler;
 
-import nablarch.common.dao.UniversalDao;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
+import nablarch.core.db.statement.SqlResultSet;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.util.DateUtil;
 import nablarch.test.support.SystemRepositoryResource;
@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,20 +61,26 @@ public class SqlExecutorTest {
     @Test
     public void test() {
         VariousDbTestHelper.setUpTable(
-                new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
+        new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        Users user = UniversalDao.findById(Users.class, 2L);
-        assertThat(user.getId(), is(2L));
-        assertThat(user.getName(), is("name_2"));
-        assertThat(user.getBirthday(), is(DateUtil.getDate("20140102")));
-        assertThat(user.getInsertDate(), is(getDate("20150402123456")));
-        assertThat(user.getVersion(), is(99L));
-        assertThat(user.isActive(), is(true));
+        ArrayList<String> arr= new ArrayList<String>();
+        arr.add("userId");
+        arr.add("2");
+        SqlExecutor sqlExecutor = new SqlExecutor();
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where USER_ID = :userId", arr);
+
+        assertThat(rs.get(0).getLong("USER_ID"), is(2L));
+        assertThat(rs.get(0).getString("NAME"), is("name_2"));
+        assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
+        assertThat(rs.get(0).getDate("INSERT_DATE"), is(getDate("20150402123456")));
+        assertThat(rs.get(0).getLong("VERSION"), is(99L));
+        assertThat(rs.get(0).getBoolean("active"), is(true));
     }
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+//    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public static Date getDate(String date) {
         try {

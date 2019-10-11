@@ -372,7 +372,7 @@ public class SqlExecutor implements Handler<Object, Object> {
         return sql.startsWith("SELECT") || sql.startsWith("select");
     }
 
-    private int executeDml(String sql, List<String> args) {
+    int executeDml(String sql, List<String> args) {
         AppDbConnection conn = DbConnectionContext.getConnection();
         int affectedRowCount = 0;
 
@@ -401,7 +401,7 @@ public class SqlExecutor implements Handler<Object, Object> {
         emit("");
     }
 
-    private SqlResultSet executeQuery(String sql, List<String> args) {
+    SqlResultSet executeQuery(String sql, List<String> args) {
         AppDbConnection conn = DbConnectionContext.getConnection();
         SqlResultSet rs;
 
