@@ -487,6 +487,10 @@ public class SqlExecutor implements Handler<Object, Object> {
                  );
              }
         }
+
+        if (isArrayLiteral(literal)) {
+            return evalArray(literal);
+        }
         return literal;
     }
 
@@ -495,6 +499,34 @@ public class SqlExecutor implements Handler<Object, Object> {
             String literal = params.get(i);
             stmt.setObject(i+1, evalParam(literal));
         }
+    }
+
+    /**
+     * 配列リテラルであるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return '['で開始し']'で終了する文字列の場合、真
+     */
+    private boolean isArrayLiteral(String literal) {
+        return literal.startsWith("[") && literal.endsWith("]");
+    }
+
+    /**
+     * 配列リテラルを評価する
+     *
+     * @param arrayLiteral 配列リテラル
+     * @return 配列
+     */
+    private String[] evalArray(String arrayLiteral) {
+        String valuesWithComma = arrayLiteral.substring(1, arrayLiteral.length() - 1).trim();
+        if (valuesWithComma.isEmpty()) {
+            return null;
+        }
+        String[] array = valuesWithComma.split(",");
+        for (int i = 0; i < array.length; i++) {
+            array[i] = array[i].trim();
+        }
+        return array;
     }
 
     private static Pattern DATE_LITERAL = Pattern.compile(
