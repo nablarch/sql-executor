@@ -110,7 +110,7 @@ public class SqlExecutorTest {
     }
 
     /**
-     * {@link SqlExecutor#executeQuery(String, List)}のテスことト。
+     * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
      * $ifの条件が存在しないとき、正常に検索できること。
      */
@@ -136,7 +136,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件に[]が含まれていないとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
+     * IN句の条件に[]が含まれていないとき、IllegalArgumentExceptionが送出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testArrNotContainsBrackets() {
@@ -159,7 +159,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件の[]が閉じられていないとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
+     * $ifの条件の[]が閉じられていないとき、IllegalArgumentExceptionが送出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testBracketsNotClosed() {
@@ -213,7 +213,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
+     * IN句の条件が空のとき、IllegalArgumentExceptionが送出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testCondIsEmpty() {
