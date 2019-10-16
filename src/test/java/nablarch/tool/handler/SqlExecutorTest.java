@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +36,9 @@ public class SqlExecutorTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    /** テスト用データベース接続 */
+    /**
+     * テスト用データベース接続
+     */
     private TransactionManagerConnection connection;
 
     @BeforeClass
@@ -68,17 +70,13 @@ public class SqlExecutorTest {
     @Test
     public void test$ifInCondEquals() {
         VariousDbTestHelper.setUpTable(
-        new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
+                new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("userId");
-        arr.add("[2]");
-        arr.add("userId");
-        arr.add("[2]");
+        List<String> args = Arrays.asList("userId", "[2]", "userId", "[2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(userId){USER_ID in (:userId[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(userId){USER_ID in (:userId[])}", args);
 
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
@@ -100,13 +98,9 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("[2]");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
 
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
@@ -128,11 +122,9 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("userId");
-        arr.add("[2]");
+        List<String> args = Arrays.asList("userId", "[2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where USER_ID in (:userId[])", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where USER_ID in (:userId[])", args);
 
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
@@ -154,17 +146,13 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("2");
+        List<String> args= Arrays.asList("flag", "true","userId", "2");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
-            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        }catch(Exception e){
+        } catch (Exception e) {
             assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
         }
     }
@@ -181,17 +169,13 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("[2");
+        List<String> args= Arrays.asList("flag", "true","userId", "[2");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
-            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        }catch(Exception e){
+        } catch (Exception e) {
             assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
         }
     }
@@ -208,13 +192,9 @@ public class SqlExecutorTest {
                 new Users(2L, "[2name]", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("name");
-        arr.add("[[1name],[2name]]");
+        List<String> args= Arrays.asList("flag", "true","name", "[[1name],[2name]]");
         SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){NAME in (:name[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){NAME in (:name[])}", args);
 
         assertThat(rs.get(0).getLong("USER_ID"), is(1L));
         assertThat(rs.get(0).getString("NAME"), is("[1name]"));
@@ -243,17 +223,13 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr= new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("");
+        List<String> args= Arrays.asList("flag", "true","userId", "");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
-            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        }catch(Exception e){
+        } catch (Exception e) {
             assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
         }
     }
@@ -270,14 +246,10 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr = new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("[]");
+        List<String> args= Arrays.asList("flag", "true","userId", "[]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
         assertThat(rs.size(), is(0));
 
     }
@@ -294,14 +266,10 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr = new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("[,]");
+        List<String> args= Arrays.asList("flag", "true","userId", "[,]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
         assertThat(rs.size(), is(0));
     }
 
@@ -317,14 +285,10 @@ public class SqlExecutorTest {
                 new Users(2L, "２番", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr = new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("name");
-        arr.add("[２番]");
+        List<String> args= Arrays.asList("flag", "true","userId", "[2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){NAME in (:name[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("２番"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
@@ -346,14 +310,10 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr = new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("name");
-        arr.add("[name_2]");
+        List<String> args= Arrays.asList("flag", "true","name", "[name_2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){Name in (:name[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){Name in (:name[])}", args);
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
@@ -375,14 +335,10 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        ArrayList<String> arr = new ArrayList<String>();
-        arr.add("flag");
-        arr.add("true");
-        arr.add("userId");
-        arr.add("[4,5,6,7]");
+        List<String> args= Arrays.asList("flag", "true","userId", "[4,5,6,7]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", arr);
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
         assertThat(rs.size(), is(0));
     }
 
