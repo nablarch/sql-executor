@@ -48,6 +48,18 @@
       <scope>runtime</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.nablarch.dev</groupId>
+      <artifactId>nablarch-test-support</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
 <!-- 使用するRDBMSにあわせて、下記JDBCドライバの dependency を更新してください。 -->
     <dependency>
       <groupId>com.h2database</groupId>

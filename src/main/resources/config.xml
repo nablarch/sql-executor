@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration  ./component-configuration.xsd">
 
   <!-- データベース接続設定 -->
-  <config-file file="db.config" />
+  <config-file file="sqle-db.config" />
 
-  <import file="db.xml" />
+  <import file="sqle-db.xml" />
   <import file="date.xml" />
 
   <!-- データベースコネクションを実現するハンドラ -->

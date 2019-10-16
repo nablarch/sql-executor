@@ -358,10 +358,12 @@ public class SqlExecutor implements Handler<Object, Object> {
         sql = sql.trim();
 
         if (isQuery(sql)) {
-            executeQuery(sql, args);
+            SqlResultSet rs = executeQuery(sql, args);
+            showExecuteResult(sql, rs);
         }
         else {
-            executeDml(sql, args);
+            int affectedRowCount = executeDml(sql, args);
+            showDmlResult(sql, affectedRowCount);
         }
     }
 
@@ -370,15 +372,9 @@ public class SqlExecutor implements Handler<Object, Object> {
         return sql.startsWith("SELECT") || sql.startsWith("select");
     }
 
-    private void executeDml(String sql, List<String> args) {
+    int executeDml(String sql, List<String> args) {
         AppDbConnection conn = DbConnectionContext.getConnection();
         int affectedRowCount = 0;
-
-        emit("");
-        emit(sql);
-        emit("");
-        emit("<<------------------------------------->>");
-        emit("");
 
         if (usesKeywordArgs(sql)) {
             Map<String, Object> kargs = toKeywordArgs(args);
@@ -391,13 +387,23 @@ public class SqlExecutor implements Handler<Object, Object> {
             affectedRowCount = stmt.executeUpdate();
         }
 
+        return affectedRowCount;
+    }
+
+    private void showDmlResult(String sql, int affectedRowCount){
+
+        emit("");
+        emit(sql);
+        emit("");
+        emit("<<------------------------------------->>");
+        emit("");
         emit(String.valueOf(affectedRowCount) + " rows updated.");
         emit("");
     }
 
-    private void executeQuery(String sql, List<String> args) {
+    SqlResultSet executeQuery(String sql, List<String> args) {
         AppDbConnection conn = DbConnectionContext.getConnection();
-        SqlResultSet rs = null;
+        SqlResultSet rs;
 
         if (usesKeywordArgs(sql)) {
             Map<String, Object> kargs = toKeywordArgs(args);
@@ -409,7 +415,10 @@ public class SqlExecutor implements Handler<Object, Object> {
             bindParams(stmt, args);
             rs = stmt.retrieve();
         }
+        return rs;
+    }
 
+    private void showExecuteResult(String sql, SqlResultSet rs){
         emit("");
         emit(sql);
         emit("");
@@ -456,11 +465,12 @@ public class SqlExecutor implements Handler<Object, Object> {
                 String val  = String.valueOf(col.getValue());
 
                 values.append(pad(val, colLength.get(name), ' '))
-                      .append(" ");
+                        .append(" ");
             }
             emit(values.toString());
         }
         emit("");
+
     }
 
     private Object evalParam(String literal) {
@@ -487,6 +497,10 @@ public class SqlExecutor implements Handler<Object, Object> {
                  );
              }
         }
+
+        if (isArrayLiteral(literal)) {
+            return evalArray(literal);
+        }
         return literal;
     }
 
@@ -495,6 +509,34 @@ public class SqlExecutor implements Handler<Object, Object> {
             String literal = params.get(i);
             stmt.setObject(i+1, evalParam(literal));
         }
+    }
+
+    /**
+     * 配列リテラルであるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return '['で開始し']'で終了する文字列の場合、真
+     */
+    private boolean isArrayLiteral(String literal) {
+        return literal.startsWith("[") && literal.endsWith("]");
+    }
+
+    /**
+     * 配列リテラルを評価する
+     *
+     * @param arrayLiteral 配列リテラル
+     * @return 配列
+     */
+    private String[] evalArray(String arrayLiteral) {
+        String valuesWithComma = arrayLiteral.substring(1, arrayLiteral.length() - 1).trim();
+        if (valuesWithComma.isEmpty()) {
+            return null;
+        }
+        String[] array = valuesWithComma.split(",");
+        for (int i = 0; i < array.length; i++) {
+            array[i] = array[i].trim();
+        }
+        return array;
     }
 
     private static Pattern DATE_LITERAL = Pattern.compile(
