@@ -9,7 +9,6 @@ import nablarch.core.util.DateUtil;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -65,7 +64,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件=IN句の条件のとき。
+     * $ifの条件=IN句の条件のとき、正常に検索できること。
      */
     @Test
     public void test$ifInCondEquals() {
@@ -89,7 +88,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件!=IN句の条件のとき。
+     * $ifの条件!=IN句の条件のとき、正常に検索できること。
      */
     @Test
     public void test$ifInCondNotEquals() {
@@ -111,9 +110,9 @@ public class SqlExecutorTest {
     }
 
     /**
-     * {@link SqlExecutor#executeQuery(String, List)}のテスト。
+     * {@link SqlExecutor#executeQuery(String, List)}のテスことト。
      * <p/>
-     * $ifの条件が存在しないとき。
+     * $ifの条件が存在しないとき、正常に検索できること。
      */
     @Test
     public void test$ifIsNotExists() {
@@ -137,7 +136,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件に[]が含まれていないとき。
+     * IN句の条件に[]が含まれていないとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testArrNotContainsBrackets() {
@@ -146,21 +145,21 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "2");
+        List<String> args = Arrays.asList("flag", "true", "userId", "2");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        } catch (Exception e) {
-            assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
+        } catch (IllegalArgumentException e) {
+            assertEquals("object type in field is invalid. valid object type is Collection or Array. field name = [userId].", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件の[]が閉じられていないとき。
+     * $ifの条件の[]が閉じられていないとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testBracketsNotClosed() {
@@ -169,21 +168,21 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "[2");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[2");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        } catch (Exception e) {
-            assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
+        } catch (IllegalArgumentException e) {
+            assertEquals("object type in field is invalid. valid object type is Collection or Array. field name = [userId].", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件内に[]が含まれているとき。
+     * IN句の条件内に[]が含まれているとき、正常に検索できること。
      */
     @Test
     public void testCondContainsBrackets() {
@@ -192,7 +191,7 @@ public class SqlExecutorTest {
                 new Users(2L, "[2name]", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","name", "[[1name],[2name]]");
+        List<String> args = Arrays.asList("flag", "true", "name", "[[1name],[2name]]");
         SqlExecutor sqlExecutor = new SqlExecutor();
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){NAME in (:name[])}", args);
 
@@ -214,7 +213,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき。
+     * IN句の条件が空のとき、IllegalArgumentExceptionが排出され、正しいエラーメッセージが取得されること。
      */
     @Test
     public void testCondIsEmpty() {
@@ -223,21 +222,21 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "");
+        List<String> args = Arrays.asList("flag", "true", "userId", "");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         try {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        } catch (Exception e) {
-            assertThat(e, is(CoreMatchers.<Exception>instanceOf(IllegalArgumentException.class)));
+        } catch (IllegalArgumentException e) {
+            assertEquals("object type in field is invalid. valid object type is Collection or Array. field name = [userId].", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき。
+     * IN句の条件が空のとき、正常に検索できること（検索結果0件）。
      */
     @Test
     public void testCondArrIsEmpty() {
@@ -246,7 +245,7 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "[]");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
@@ -257,7 +256,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が、空が入力された配列のとき。
+     * 空が入力された配列がIN句の条件のとき、正常に検索できること(検索結果0件)。
      */
     @Test
     public void testCondArrHasNoItem() {
@@ -266,7 +265,7 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "[,]");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[,]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
@@ -276,7 +275,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が数値のとき。
+     * IN句の条件が数値のとき、正常に検索できること。
      */
     @Test
     public void testCondIsNumber() {
@@ -285,7 +284,7 @@ public class SqlExecutorTest {
                 new Users(2L, "２番", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "[2]");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
@@ -297,11 +296,10 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
 
-
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が文字列のとき。
+     * IN句の条件が文字列のとき、正常に検索できること。
      */
     @Test
     public void testCondIsString() {
@@ -310,7 +308,7 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","name", "[name_2]");
+        List<String> args = Arrays.asList("flag", "true", "name", "[name_2]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){Name in (:name[])}", args);
@@ -322,11 +320,10 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
 
-
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * 検索結果件数が0件のとき。
+     * 条件に合致する検索結果が存在しないとき、正常に検索できること(検索結果0件)。
      */
     @Test
     public void testHasNoResults() {
@@ -335,7 +332,7 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args= Arrays.asList("flag", "true","userId", "[4,5,6,7]");
+        List<String> args = Arrays.asList("flag", "true", "userId", "[4,5,6,7]");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
