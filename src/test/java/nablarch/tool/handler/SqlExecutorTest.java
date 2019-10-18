@@ -81,7 +81,7 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
@@ -105,7 +105,7 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
@@ -129,7 +129,7 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
@@ -199,14 +199,14 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(1L));
         assertThat(rs.get(0).getString("NAME"), is("[1name]"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140101")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150401123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150401123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(9L));
         assertThat(rs.get(0).getBoolean("active"), is(false));
 
         assertThat(rs.get(1).getLong("USER_ID"), is(2L));
         assertThat(rs.get(1).getString("NAME"), is("[2name]"));
         assertThat(rs.get(1).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(1).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(1).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(1).getLong("VERSION"), is(99L));
         assertThat(rs.get(1).getBoolean("active"), is(true));
     }
@@ -292,7 +292,7 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("２番"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
@@ -316,7 +316,7 @@ public class SqlExecutorTest {
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
         assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
-        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(new Timestamp(getDate("20150402123456").getTime())));
+        assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
         assertThat(rs.get(0).getBoolean("active"), is(true));
     }
@@ -342,11 +342,15 @@ public class SqlExecutorTest {
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 
-    public static Date getDate(String date) {
+    private static Date getDate(String date) {
         try {
             return sdf.parse(date);
         } catch (ParseException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e);
         }
+    }
+
+    private static Timestamp getTimestamp(String date) {
+        return new Timestamp(getDate(date).getTime());
     }
 }
