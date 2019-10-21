@@ -356,7 +356,7 @@ public class SqlExecutorTest {
     }
 
     private static void assertDateEquals(Date expected, Date actual) {
-        if (expected instanceof Timestamp) {
+        if (actual instanceof Timestamp) {
             expected = new Timestamp(expected.getTime());
         }
         assertThat(actual, is(expected));
