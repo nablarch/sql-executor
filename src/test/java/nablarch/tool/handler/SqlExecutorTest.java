@@ -206,7 +206,6 @@ public class SqlExecutorTest {
 
         assertThat(rs.get(1).getLong("USER_ID"), is(2L));
         assertThat(rs.get(1).getString("NAME"), is("[2name]"));
-        assertThat(rs.get(1).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
         assertDateEquals(DateUtil.getDate("20140102"), rs.get(1).getDate("BIRTHDAY"));
         assertThat(rs.get(1).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(1).getLong("VERSION"), is(99L));
@@ -317,7 +316,6 @@ public class SqlExecutorTest {
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){Name in (:name[])}", args);
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
         assertThat(rs.get(0).getString("NAME"), is("name_2"));
-        assertThat(rs.get(0).getDate("BIRTHDAY"), is(DateUtil.getDate("20140102")));
         assertDateEquals(DateUtil.getDate("20140102"), rs.get(0).getDate("BIRTHDAY"));
         assertThat(rs.get(0).getTimestamp("INSERT_DATE"), is(getTimestamp("20150402123456")));
         assertThat(rs.get(0).getLong("VERSION"), is(99L));
