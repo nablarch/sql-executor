@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
@@ -501,7 +502,8 @@ public class SqlExecutor implements Handler<Object, Object> {
         if (isArrayLiteral(literal)) {
             return evalArray(literal);
         }
-        return literal;
+
+        return convertTypes(literal);
     }
 
     private void bindParams(SqlPStatement stmt, List<String> params) {
@@ -509,6 +511,69 @@ public class SqlExecutor implements Handler<Object, Object> {
             String literal = params.get(i);
             stmt.setObject(i+1, evalParam(literal));
         }
+    }
+
+    /**
+     * 文字列, 真偽値, 数値のいずれかにリテラルを変換する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return 型変換されたリテラル値
+     */
+    private Object convertTypes(String literal) {
+
+        if (isStringLiteral(literal)) {
+            return evalString(literal);
+        }
+
+        if (isBoolean(literal)) {
+            return evalBoolean(literal);
+        }
+
+        return new BigDecimal(literal);
+    }
+
+    /**
+     * 文字列であるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return 'で開始し'で終了する文字列の場合、真
+     */
+    private boolean isStringLiteral(String literal) {
+        return literal.startsWith("'") && literal.endsWith("'");
+    }
+
+    /**
+     * 文字列リテラルを評価する
+     *
+     * @param stringLiteral 文字列リテラル
+     * @return 文字列
+     */
+    private String evalString(String stringLiteral) {
+        String value = stringLiteral.substring(1, stringLiteral.length() - 1).trim();
+        if (value.isEmpty()) {
+            return null;
+        }
+        return value;
+    }
+
+    /**
+     * 真偽値であるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return tureもしくはfalseという文字列の時、真
+     */
+    private boolean isBoolean(String literal) {
+        return literal.equals("true") || literal.equals("false") || literal.equals("TRUE") || literal.equals("FALSE");
+    }
+
+    /**
+     * 真偽値リテラルを評価する
+     *
+     * @param boolLiteral 真偽値リテラル
+     * @return 文字列
+     */
+    private boolean evalBoolean(String boolLiteral) {
+        return boolLiteral.equals("true");
     }
 
     /**
@@ -527,16 +592,17 @@ public class SqlExecutor implements Handler<Object, Object> {
      * @param arrayLiteral 配列リテラル
      * @return 配列
      */
-    private String[] evalArray(String arrayLiteral) {
+    private Object[] evalArray(String arrayLiteral) {
         String valuesWithComma = arrayLiteral.substring(1, arrayLiteral.length() - 1).trim();
         if (valuesWithComma.isEmpty()) {
             return null;
         }
         String[] array = valuesWithComma.split(",");
+        Object[] parsedArray = new Object[array.length];
         for (int i = 0; i < array.length; i++) {
-            array[i] = array[i].trim();
+            parsedArray[i] = convertTypes(array[i].trim());
         }
-        return array;
+        return parsedArray;
     }
 
     private static Pattern DATE_LITERAL = Pattern.compile(
