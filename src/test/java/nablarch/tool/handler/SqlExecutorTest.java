@@ -175,8 +175,8 @@ public class SqlExecutorTest {
         try {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        } catch (IllegalArgumentException e) {
-            assertEquals("object type in field is invalid. valid object type is Collection or Array. field name = [userId].", e.getMessage());
+        } catch (NumberFormatException e) {
+            assertEquals(NumberFormatException.class, e.getClass());
         }
     }
 
@@ -192,7 +192,7 @@ public class SqlExecutorTest {
                 new Users(2L, "[2name]", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args = Arrays.asList("flag", "true", "name", "[[1name],[2name]]");
+        List<String> args = Arrays.asList("flag", "true", "name", "['[1name]','[2name]']");
         SqlExecutor sqlExecutor = new SqlExecutor();
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){NAME in (:name[])} order by USER_ID", args);
 
@@ -229,8 +229,8 @@ public class SqlExecutorTest {
         try {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
             fail("ここはとおらない");
-        } catch (IllegalArgumentException e) {
-            assertEquals("object type in field is invalid. valid object type is Collection or Array. field name = [userId].", e.getMessage());
+        } catch (NumberFormatException e) {
+            assertEquals(NumberFormatException.class, e.getClass());
         }
     }
 
@@ -309,7 +309,7 @@ public class SqlExecutorTest {
                 new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
                 new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
         );
-        List<String> args = Arrays.asList("flag", "true", "name", "[name_2]");
+        List<String> args = Arrays.asList("flag", "true", "name", "['name_2']");
         SqlExecutor sqlExecutor = new SqlExecutor();
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){Name in (:name[])}", args);
