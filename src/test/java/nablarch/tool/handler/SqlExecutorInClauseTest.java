@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(DatabaseTestRunner.class)
-public class SqlExecutorTest {
+public class SqlExecutorInClauseTest {
 
     @Rule
     public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("db-default.xml");
@@ -160,7 +160,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件の[]が閉じられていないとき、IllegalArgumentExceptionが送出され、正しいエラーメッセージが取得されること。
+     * $ifの条件の[]が閉じられていないとき、NumberFormatExceptionが送出されること。
      */
     @Test
     public void testBracketsNotClosed() {
@@ -214,7 +214,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき、IllegalArgumentExceptionが送出され、正しいエラーメッセージが取得されること。
+     * IN句の条件が空のとき、NumberFormatExceptionが送出されること。
      */
     @Test
     public void testCondIsEmpty() {
@@ -237,7 +237,7 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき、正常に検索できること（検索結果0件）。
+     * IN句の条件が空の配列のとき、正常に検索できること（検索結果0件）。
      */
     @Test
     public void testCondArrIsEmpty() {
@@ -324,6 +324,44 @@ public class SqlExecutorTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
+     * IN句の条件が真偽値のとき、正常に検索できること。
+     */
+    @Test
+    public void testCondIsBool() {
+        VariousDbTestHelper.setUpTable(
+                new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
+                new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
+                new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
+        );
+        List<String> args = Arrays.asList("flag", "true", "active", "[true, false]");
+        SqlExecutor sqlExecutor = new SqlExecutor();
+
+        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){active in (:active[])} order by USER_ID", args);
+        assertThat(rs.get(0).getLong("USER_ID"), is(1L));
+        assertThat(rs.get(0).getString("NAME"), is("name_1"));
+        assertDateEquals(DateUtil.getDate("20140101"), rs.get(0).getDate("BIRTHDAY"));
+        assertDateEquals(getDate("20150401123456"), rs.get(0).getDate("INSERT_DATE"));
+        assertThat(rs.get(0).getLong("VERSION"), is(9L));
+        assertThat(rs.get(0).getBoolean("active"), is(false));
+
+        assertThat(rs.get(1).getLong("USER_ID"), is(2L));
+        assertThat(rs.get(1).getString("NAME"), is("name_2"));
+        assertDateEquals(DateUtil.getDate("20140102"), rs.get(1).getDate("BIRTHDAY"));
+        assertDateEquals(getDate("20150402123456"), rs.get(1).getDate("INSERT_DATE"));
+        assertThat(rs.get(1).getLong("VERSION"), is(99L));
+        assertThat(rs.get(1).getBoolean("active"), is(true));
+
+        assertThat(rs.get(2).getLong("USER_ID"), is(3L));
+        assertThat(rs.get(2).getString("NAME"), is("name_3"));
+        assertDateEquals(DateUtil.getDate("20140103"), rs.get(2).getDate("BIRTHDAY"));
+        assertDateEquals(getDate("20150403123456"), rs.get(2).getDate("INSERT_DATE"));
+        assertThat(rs.get(2).getLong("VERSION"), is(999L));
+        assertThat(rs.get(2).getBoolean("active"), is(false));
+    }
+
+    /**
+     * {@link SqlExecutor#executeQuery(String, List)}のテスト。
+     * <p/>
      * 条件に合致する検索結果が存在しないとき、正常に検索できること(検索結果0件)。
      */
     @Test
@@ -338,6 +376,28 @@ public class SqlExecutorTest {
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
         assertThat(rs.size(), is(0));
+    }
+
+    /**
+     * {@link SqlExecutor#executeQuery(String, List)}のテスト。
+     * <p/>
+     * 条件が''のない文字列の場合、NumberFormatExceptionとなること。
+     */
+    @Test
+    public void testCondIsNoQuotationString() {
+        VariousDbTestHelper.setUpTable(
+                new Users(1L, "name_1", DateUtil.getDate("20140101"), getDate("20150401123456"), 9L, false),
+                new Users(2L, "name_2", DateUtil.getDate("20140102"), getDate("20150402123456"), 99L, true),
+                new Users(3L, "name_3", DateUtil.getDate("20140103"), getDate("20150403123456"), 999L, false)
+        );
+        List<String> args = Arrays.asList("flag", "true", "userId", "userId");
+        SqlExecutor sqlExecutor = new SqlExecutor();
+        try {
+            sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}", args);
+            fail("ここはとおらない");
+        } catch (NumberFormatException e) {
+            assertEquals(NumberFormatException.class, e.getClass());
+        }
     }
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");

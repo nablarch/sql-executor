@@ -1,1 +1,2 @@
 nablarch.tool.handler.Users
+nablarch.tool.handler.Members
