@@ -560,20 +560,20 @@ public class SqlExecutor implements Handler<Object, Object> {
      * 真偽値であるか判定する。
      *
      * @param literal パラメータのリテラル値
-     * @return tureもしくはfalseという文字列の時、真
+     * @return tureもしくはfalseという文字列の時、真（大文字小文字は区別しない）
      */
     private boolean isBoolean(String literal) {
-        return literal.equals("true") || literal.equals("false") || literal.equals("TRUE") || literal.equals("FALSE");
+        return literal.equalsIgnoreCase("true") || literal.equalsIgnoreCase("false");
     }
 
     /**
      * 真偽値リテラルを評価する
      *
      * @param boolLiteral 真偽値リテラル
-     * @return 文字列
+     * @return trueという文字列の時真（大文字小文字は区別しない）
      */
     private boolean evalBoolean(String boolLiteral) {
-        return boolLiteral.equals("true");
+        return boolLiteral.equalsIgnoreCase("true");
     }
 
     /**
