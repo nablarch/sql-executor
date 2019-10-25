@@ -46,13 +46,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 受け取った文字列をもとにSQLを実行する。
+ * 受け取った文字列をもとにSQLを実行する{@link Handler}実装クラス。
  *
  * 数値型のカラムを文字列で検索した場合、
  * PostgreSQLでは型が一致しないためエラーが出るが、
  * PostgreSQL以外のDBでは検索できるようになっている。
+ * PostgreSQLでは厳密に型が一致することが求められるが、その他のDBでは
+ * setObjectにStringを渡した場合にJDBCドライバ側で暗黙の型変換を行うからである。
+ * この動作の差異を完全に解消する（PostgreSQLの挙動に合わせる）ことは困難であり、
+ * またツールの用途から言ってその必要もないため、setObject以降の動作は
+ * 各DBのJDBCドライバの挙動通りでよいと判断した。
  *
  * また、PostgreSQLではTimeStamp型での検索ができない。
+ * これは、日付文字列を入力した場合にDate型に変換され、Timestamp型と一致しないためである。
  */
 public class SqlExecutor implements Handler<Object, Object> {
 
