@@ -45,6 +45,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 受け取った文字列をもとにSQLを実行する。
+ *
+ * 数値型のカラムを文字列で検索した場合、
+ * PostgreSQLでは型が一致しないためエラーが出るが、
+ * PostgreSQL以外のDBでは検索できるようになっている。
+ *
+ * また、PostgreSQLではTimeStamp型での検索ができない。
+ */
 public class SqlExecutor implements Handler<Object, Object> {
 
     private PrintStream out = null;
