@@ -16,6 +16,7 @@ import nablarch.fw.launcher.CommandLine;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.servlet.WebFrontController;
+import nablarch.tool.IllegalInputItemException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -34,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
@@ -44,6 +46,21 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 受け取った文字列をもとにSQLを実行する{@link Handler}実装クラス。
+ *
+ * 数値型のカラムを文字列で検索した場合、
+ * PostgreSQLでは型が一致しないためエラーが出るが、
+ * PostgreSQL以外のDBでは検索できるようになっている。
+ * PostgreSQLでは厳密に型が一致することが求められるが、その他のDBでは
+ * setObjectにStringを渡した場合にJDBCドライバ側で暗黙の型変換を行うからである。
+ * この動作の差異を完全に解消する（PostgreSQLの挙動に合わせる）ことは困難であり、
+ * またツールの用途から言ってその必要もないため、setObject以降の動作は
+ * 各DBのJDBCドライバの挙動通りでよいと判断した。
+ *
+ * また、PostgreSQLではTimeStamp型での検索ができない。
+ * これは、日付文字列を入力した場合にDate型に変換され、Timestamp型と一致しないためである。
+ */
 public class SqlExecutor implements Handler<Object, Object> {
 
     private PrintStream out = null;
@@ -474,34 +491,11 @@ public class SqlExecutor implements Handler<Object, Object> {
     }
 
     private Object evalParam(String literal) {
-        if (literal.equals("SYSDATE")) {
-           return new java.sql.Date(System.currentTimeMillis());
-        }
-        Matcher m = DATE_LITERAL.matcher(literal);
-        if (m.matches()) {
-             int year  = Integer.valueOf(m.group(1));
-             int month = Integer.valueOf(m.group(2)) -1;
-             int day   = Integer.valueOf(m.group(3));
-
-             if (m.group(4) != null) {
-                 int hour = Integer.valueOf(m.group(4));
-                 int min  = Integer.valueOf(m.group(5));
-                 int sec  = Integer.valueOf(m.group(6));
-                 return new java.sql.Date(
-                     new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
-                 );
-             }
-             else {
-                 return new java.sql.Date(
-                     new GregorianCalendar(year, month, day).getTimeInMillis()
-                 );
-             }
-        }
-
         if (isArrayLiteral(literal)) {
             return evalArray(literal);
         }
-        return literal;
+
+        return convertTypes(literal);
     }
 
     private void bindParams(SqlPStatement stmt, List<String> params) {
@@ -509,6 +503,96 @@ public class SqlExecutor implements Handler<Object, Object> {
             String literal = params.get(i);
             stmt.setObject(i+1, evalParam(literal));
         }
+    }
+
+    /**
+     * 文字列, 真偽値, 数値のいずれかにリテラルを変換する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return 型変換されたリテラル値
+     */
+    private Object convertTypes(String literal) {
+        if (literal.equals("SYSDATE")) {
+            return new java.sql.Date(System.currentTimeMillis());
+        }
+        Matcher m = DATE_LITERAL.matcher(literal);
+        if (m.matches()) {
+            int year  = Integer.valueOf(m.group(1));
+            int month = Integer.valueOf(m.group(2)) -1;
+            int day   = Integer.valueOf(m.group(3));
+
+            if (m.group(4) != null) {
+                int hour = Integer.valueOf(m.group(4));
+                int min  = Integer.valueOf(m.group(5));
+                int sec  = Integer.valueOf(m.group(6));
+                return new java.sql.Date(
+                        new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
+                );
+            }
+            else {
+                return new java.sql.Date(
+                        new GregorianCalendar(year, month, day).getTimeInMillis()
+                );
+            }
+        }
+
+        if (isStringLiteral(literal)) {
+            return evalString(literal);
+        }
+
+        if (isBoolean(literal)) {
+            return evalBoolean(literal);
+        }
+
+        try {
+            return new BigDecimal(literal);
+        } catch (NumberFormatException e) {
+            throw new IllegalInputItemException(literal, e);
+        }
+    }
+
+    /**
+     * 文字列であるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return 'で開始し'で終了する文字列の場合、真
+     */
+    private boolean isStringLiteral(String literal) {
+        return literal.startsWith("'") && literal.endsWith("'");
+    }
+
+    /**
+     * 文字列リテラルを評価する
+     *
+     * @param stringLiteral 文字列リテラル
+     * @return 文字列
+     */
+    private String evalString(String stringLiteral) {
+        String value = stringLiteral.substring(1, stringLiteral.length() - 1).trim();
+        if (value.isEmpty()) {
+            return null;
+        }
+        return value;
+    }
+
+    /**
+     * 真偽値であるか判定する。
+     *
+     * @param literal パラメータのリテラル値
+     * @return tureもしくはfalseという文字列の時、真（大文字小文字は区別しない）
+     */
+    private boolean isBoolean(String literal) {
+        return literal.equalsIgnoreCase("true") || literal.equalsIgnoreCase("false");
+    }
+
+    /**
+     * 真偽値リテラルを評価する
+     *
+     * @param boolLiteral 真偽値リテラル
+     * @return trueという文字列の時真（大文字小文字は区別しない）
+     */
+    private boolean evalBoolean(String boolLiteral) {
+        return boolLiteral.equalsIgnoreCase("true");
     }
 
     /**
@@ -527,16 +611,17 @@ public class SqlExecutor implements Handler<Object, Object> {
      * @param arrayLiteral 配列リテラル
      * @return 配列
      */
-    private String[] evalArray(String arrayLiteral) {
+    private Object[] evalArray(String arrayLiteral) {
         String valuesWithComma = arrayLiteral.substring(1, arrayLiteral.length() - 1).trim();
         if (valuesWithComma.isEmpty()) {
             return null;
         }
         String[] array = valuesWithComma.split(",");
+        Object[] parsedArray = new Object[array.length];
         for (int i = 0; i < array.length; i++) {
-            array[i] = array[i].trim();
+            parsedArray[i] = convertTypes(array[i].trim());
         }
-        return array;
+        return parsedArray;
     }
 
     private static Pattern DATE_LITERAL = Pattern.compile(
