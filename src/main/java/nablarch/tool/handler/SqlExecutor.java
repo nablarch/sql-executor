@@ -547,7 +547,7 @@ public class SqlExecutor implements Handler<Object, Object> {
         try {
             return new BigDecimal(literal);
         } catch (NumberFormatException e) {
-            throw new IllegalInputItemException("引数\"" + literal + "\"の指定方法が正しくありません。", e);
+            throw new IllegalInputItemException(literal, e);
         }
     }
 

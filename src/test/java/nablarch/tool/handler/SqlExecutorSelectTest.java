@@ -188,7 +188,7 @@ public class SqlExecutorSelectTest {
                     , Arrays.asList("stringCol", "string2"));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"string2\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg("string2"),  e.getMessage());
         }
     }
 
@@ -210,7 +210,7 @@ public class SqlExecutorSelectTest {
                     , Arrays.asList("stringCol", "'string2"));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"'string2\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg("'string2"), e.getMessage());
         }
     }
 
@@ -232,7 +232,7 @@ public class SqlExecutorSelectTest {
                     , Arrays.asList("stringCol", ""));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg(""), e.getMessage());
         }
     }
 
@@ -244,5 +244,9 @@ public class SqlExecutorSelectTest {
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static String getIllegalInputItemExceptionMsg(String literal) {
+        return "パラメータの指定方法が正しくありません。 [" + literal + "]";
     }
 }

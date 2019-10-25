@@ -191,7 +191,7 @@ public class SqlExecutorInClauseTest {
                     , Arrays.asList("flag", "true", "userId", "[2"));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"[2\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg("[2"), e.getMessage());
         }
     }
 
@@ -213,7 +213,7 @@ public class SqlExecutorInClauseTest {
                     , Arrays.asList("flag", "true", "userId", ""));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg(""), e.getMessage());
         }
     }
 
@@ -290,7 +290,7 @@ public class SqlExecutorInClauseTest {
                     , Arrays.asList("flag", "true", "userId", "userId"));
             fail("ここはとおらない");
         } catch (IllegalInputItemException e) {
-            assertEquals("引数\"userId\"の指定方法が正しくありません。", e.getMessage());
+            assertEquals(getIllegalInputItemExceptionMsg("userId"), e.getMessage());
         }
     }
 
@@ -304,4 +304,7 @@ public class SqlExecutorInClauseTest {
         }
     }
 
+    private static String getIllegalInputItemExceptionMsg(String literal) {
+        return "パラメータの指定方法が正しくありません。 [" + literal + "]";
+    }
 }
