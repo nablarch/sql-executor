@@ -208,47 +208,6 @@ public class Members {
     public void setBool4(Boolean bool4) {
         this.bool4 = bool4;
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || getClass() != o.getClass()) {
-//            return false;
-//        }
-//
-//        Members users = (Members) o;
-//
-//        if (id != null ? !id.equals(users.id) : users.id != null) {
-//            return false;
-//        }
-//        if (name != null ? !name.equals(users.name) : users.name != null) {
-//            return false;
-//        }
-//        if (birthday != null ? !birthday.equals(users.birthday) : users.birthday != null) {
-//            return false;
-//        }
-//        if (insertDate != null ? !insertDate.equals(users.insertDate) : users.insertDate != null) {
-//            return false;
-//        }
-//        if (version != null ? !version.equals(users.version) : users.version != null) {
-//            return false;
-//        }
-//        return !(active != null ? !active.equals(users.active) : users.active != null);
-//
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        int result = id != null ? id.hashCode() : 0;
-//        result = 31 * result + (name != null ? name.hashCode() : 0);
-//        result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
-//        result = 31 * result + (insertDate != null ? insertDate.hashCode() : 0);
-//        result = 31 * result + (version != null ? version.hashCode() : 0);
-//        result = 31 * result + (active != null ? active.hashCode() : 0);
-//        return result;
-//    }
 }
 
 
