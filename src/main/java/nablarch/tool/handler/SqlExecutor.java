@@ -490,30 +490,6 @@ public class SqlExecutor implements Handler<Object, Object> {
     }
 
     private Object evalParam(String literal) {
-        if (literal.equals("SYSDATE")) {
-           return new java.sql.Date(System.currentTimeMillis());
-        }
-        Matcher m = DATE_LITERAL.matcher(literal);
-        if (m.matches()) {
-             int year  = Integer.valueOf(m.group(1));
-             int month = Integer.valueOf(m.group(2)) -1;
-             int day   = Integer.valueOf(m.group(3));
-
-             if (m.group(4) != null) {
-                 int hour = Integer.valueOf(m.group(4));
-                 int min  = Integer.valueOf(m.group(5));
-                 int sec  = Integer.valueOf(m.group(6));
-                 return new java.sql.Date(
-                     new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
-                 );
-             }
-             else {
-                 return new java.sql.Date(
-                     new GregorianCalendar(year, month, day).getTimeInMillis()
-                 );
-             }
-        }
-
         if (isArrayLiteral(literal)) {
             return evalArray(literal);
         }
@@ -535,6 +511,29 @@ public class SqlExecutor implements Handler<Object, Object> {
      * @return 型変換されたリテラル値
      */
     private Object convertTypes(String literal) {
+        if (literal.equals("SYSDATE")) {
+            return new java.sql.Date(System.currentTimeMillis());
+        }
+        Matcher m = DATE_LITERAL.matcher(literal);
+        if (m.matches()) {
+            int year  = Integer.valueOf(m.group(1));
+            int month = Integer.valueOf(m.group(2)) -1;
+            int day   = Integer.valueOf(m.group(3));
+
+            if (m.group(4) != null) {
+                int hour = Integer.valueOf(m.group(4));
+                int min  = Integer.valueOf(m.group(5));
+                int sec  = Integer.valueOf(m.group(6));
+                return new java.sql.Date(
+                        new GregorianCalendar(year, month, day, hour, min, sec).getTimeInMillis()
+                );
+            }
+            else {
+                return new java.sql.Date(
+                        new GregorianCalendar(year, month, day).getTimeInMillis()
+                );
+            }
+        }
 
         if (isStringLiteral(literal)) {
             return evalString(literal);
