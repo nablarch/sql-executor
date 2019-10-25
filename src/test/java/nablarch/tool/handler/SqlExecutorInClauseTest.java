@@ -107,11 +107,6 @@ public class SqlExecutorInClauseTest {
                 , Arrays.asList("insertDate", "[2015-04-02 12:34:56]"));
 
         assertThat(rs.get(0).getLong("USER_ID"), is(2L));
-        assertThat(rs.get(0).getString("NAME"), is("name_2"));
-        assertDateEquals(DateUtil.getDate("20140102"), rs.get(0).getDate("BIRTHDAY"));
-        assertDateEquals(getDate("20150402123456"), rs.get(0).getDate("INSERT_DATE"));
-        assertThat(rs.get(0).getLong("VERSION"), is(99L));
-        assertThat(rs.get(0).getBoolean("active"), is(true));
     }
 
     /**
@@ -132,18 +127,8 @@ public class SqlExecutorInClauseTest {
                 , Arrays.asList("flag", "true", "name", "['[1name]','[2name]']"));
 
         assertThat(rs.get(0).getLong("USER_ID"), is(1L));
-        assertThat(rs.get(0).getString("NAME"), is("[1name]"));
-        assertDateEquals(DateUtil.getDate("20140101"), rs.get(0).getDate("BIRTHDAY"));
-        assertDateEquals(getDate("20150401123456"), rs.get(0).getDate("INSERT_DATE"));
-        assertThat(rs.get(0).getLong("VERSION"), is(9L));
-        assertThat(rs.get(0).getBoolean("active"), is(false));
 
         assertThat(rs.get(1).getLong("USER_ID"), is(2L));
-        assertThat(rs.get(1).getString("NAME"), is("[2name]"));
-        assertDateEquals(DateUtil.getDate("20140102"), rs.get(1).getDate("BIRTHDAY"));
-        assertDateEquals(getDate("20150402123456"), rs.get(1).getDate("INSERT_DATE"));
-        assertThat(rs.get(1).getLong("VERSION"), is(99L));
-        assertThat(rs.get(1).getBoolean("active"), is(true));
     }
 
     /**
@@ -319,11 +304,4 @@ public class SqlExecutorInClauseTest {
         }
     }
 
-    private static void assertDateEquals(Date expected, Date actual) {
-        if (actual instanceof Timestamp) {
-            expected = new Timestamp(expected.getTime());
-        }
-        assertThat(actual, is(expected));
-
-    }
 }

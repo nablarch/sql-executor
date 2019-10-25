@@ -14,7 +14,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -103,7 +102,6 @@ public class SqlExecutorSelectTest {
                 ));
 
         assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
-        assertThat(rs.get(0).getString("STRING_COL"), is("string2"));
     }
 
     /**
@@ -131,7 +129,6 @@ public class SqlExecutorSelectTest {
                         "doubleCol", "244.4"
                 ));
 
-        assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
         assertThat(rs.get(0).getString("STRING_COL"), is("true"));
     }
 
@@ -152,7 +149,6 @@ public class SqlExecutorSelectTest {
                 , Arrays.asList("timestampCol", "2015-04-01 22:22:56"));
 
         assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
-        assertThat(rs.get(0).getString("STRING_COL"), is("string2"));
     }
 
     /**
@@ -170,7 +166,6 @@ public class SqlExecutorSelectTest {
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_MEMBERS where STRING_COL = :stringCol"
                 , Arrays.asList("stringCol", "'strin'g'2'"));
-        assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
         assertThat(rs.get(0).getString("STRING_COL"), is("strin'g'2"));
     }
 
@@ -248,13 +243,5 @@ public class SqlExecutorSelectTest {
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    private static void assertDateEquals(Date expected, Date actual) {
-        if (actual instanceof Timestamp) {
-            expected = new Timestamp(expected.getTime());
-        }
-        assertThat(actual, is(expected));
-
     }
 }
