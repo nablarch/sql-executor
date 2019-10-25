@@ -9,6 +9,7 @@ import nablarch.core.util.DateUtil;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
+import nablarch.tool.IllegalInputItemException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -172,7 +173,7 @@ public class SqlExecutorSelectTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * 文字列の入力に'（クォーテーション）が無いとき、NumberFormatExceptionが送出されること。
+     * 文字列の入力に'（クォーテーション）が無いとき、正しいメッセージが送出されること。
      */
     @Test
     public void testNoQuotation() {
@@ -186,15 +187,15 @@ public class SqlExecutorSelectTest {
             sqlExecutor.executeQuery("select * from DAO_MEMBERS where STRING_COL = :stringCol"
                     , Arrays.asList("stringCol", "string2"));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"string2\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * 文字列の入力の'（クォーテーション）が一部しか付与されていないとき、NumberFormatExceptionが送出されること。
+     * 文字列の入力の'（クォーテーション）が一部しか付与されていないとき、正しいメッセージが送出されること。
      */
     @Test
     public void testNotEnoughQuotation() {
@@ -208,15 +209,15 @@ public class SqlExecutorSelectTest {
             sqlExecutor.executeQuery("select * from DAO_MEMBERS where STRING_COL = :stringCol"
                     , Arrays.asList("stringCol", "'string2"));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"'string2\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * 文字列の入力が無いとき、NumberFormatExceptionが送出されること。
+     * 文字列の入力が無いとき、正しいメッセージが送出されること。
      */
     @Test
     public void testStringHasNoContent() {
@@ -230,8 +231,8 @@ public class SqlExecutorSelectTest {
             sqlExecutor.executeQuery("select * from DAO_MEMBERS where STRING_COL = :stringCol"
                     , Arrays.asList("stringCol", ""));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals("message", e.getMessage());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 

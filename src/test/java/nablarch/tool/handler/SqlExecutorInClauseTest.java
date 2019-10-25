@@ -9,11 +9,11 @@ import nablarch.core.util.DateUtil;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
+import nablarch.tool.IllegalInputItemException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -176,7 +176,7 @@ public class SqlExecutorInClauseTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * $ifの条件の[]が閉じられていないとき、NumberFormatExceptionが送出されること。
+     * $ifの条件の[]が閉じられていないとき、正しいメッセージが送出されること。
      */
     @Test
     public void testBracketsNotClosed() {
@@ -190,15 +190,15 @@ public class SqlExecutorInClauseTest {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}"
                     , Arrays.asList("flag", "true", "userId", "[2"));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"[2\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * IN句の条件が空のとき、NumberFormatExceptionが送出されること。
+     * IN句の条件が空のとき、正しいメッセージが送出されること
      */
     @Test
     public void testCondIsEmpty() {
@@ -212,8 +212,8 @@ public class SqlExecutorInClauseTest {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}"
                     , Arrays.asList("flag", "true", "userId", ""));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 
@@ -275,7 +275,7 @@ public class SqlExecutorInClauseTest {
     /**
      * {@link SqlExecutor#executeQuery(String, List)}のテスト。
      * <p/>
-     * 条件が''のない文字列の場合、NumberFormatExceptionとなること。
+     * 条件が''のない文字列の場合、正しいメッセージが送出されること。
      */
     @Test
     public void testCondIsNoQuotationString() {
@@ -289,8 +289,8 @@ public class SqlExecutorInClauseTest {
             sqlExecutor.executeQuery("select * from DAO_USERS where $if(flag){USER_ID in (:userId[])}"
                     , Arrays.asList("flag", "true", "userId", "userId"));
             fail("ここはとおらない");
-        } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+        } catch (IllegalInputItemException e) {
+            assertEquals("引数\"userId\"の指定方法が正しくありません。", e.getMessage());
         }
     }
 

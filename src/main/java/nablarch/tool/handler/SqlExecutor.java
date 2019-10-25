@@ -16,6 +16,7 @@ import nablarch.fw.launcher.CommandLine;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.servlet.WebFrontController;
+import nablarch.tool.IllegalInputItemException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -543,7 +544,11 @@ public class SqlExecutor implements Handler<Object, Object> {
             return evalBoolean(literal);
         }
 
-        return new BigDecimal(literal);
+        try {
+            return new BigDecimal(literal);
+        } catch (NumberFormatException e) {
+            throw new IllegalInputItemException("引数\"" + literal + "\"の指定方法が正しくありません。", e);
+        }
     }
 
     /**
