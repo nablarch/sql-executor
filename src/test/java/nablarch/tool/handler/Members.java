@@ -64,25 +64,6 @@ public class Members {
     public Members() {
     }
 
-    public Members(Long id) {
-        this.id = id;
-    }
-
-    public Members(Long id, String stringCol) {
-        this.id = id;
-        this.stringCol = stringCol;
-    }
-
-    public Members(Long id, String stringCol, BigDecimal bigDecimalCol, Integer integerCol, Float floatCol, Double doubleCol, Short shortCol) {
-        this.id = id;
-        this.stringCol = stringCol;
-        this.bigDecimalCol = bigDecimalCol;
-        this.integerCol = integerCol;
-        this.floatCol = floatCol;
-        this.doubleCol = doubleCol;
-        this.shortCol = shortCol;
-    }
-
     public Members(Long id, String stringCol, Date dateCol, Date timestampCol, BigDecimal bigDecimalCol, int integerCol, float floatCol, double doubleCol, short shortCol, Boolean bool1, Boolean bool2, Boolean bool3, Boolean bool4) {
         this.id = id;
         this.stringCol = stringCol;

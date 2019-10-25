@@ -67,9 +67,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testSelectInteger() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2), 22, (float) 23, 244, (short) 52, true, false, true, false),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2), 22,  23F, 244, (short) 52, true, false, true, false),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
 
         SqlResultSet rs = sqlExecutor.executeQuery(
@@ -113,9 +113,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testSelectDecimal() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal("1.11111"), 12, (float) 13.5, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "true", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal("2.1111111111"), 22, (float) 23.5, 244.4, (short) 52, true, true, true, true),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal("3.1111111111"), 32, (float) 33.5, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal("1.11111"), 12,  13.5F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "true", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal("2.1111111111"), 22,  23.5F, 244.4, (short) 52, true, true, true, true),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal("3.1111111111"), 32,  33.5F, 344.4, (short) 53, true, true, true, true)
         );
         SqlResultSet rs = sqlExecutor.executeQuery(
                 "select * from DAO_MEMBERS " +
@@ -141,9 +141,9 @@ public class SqlExecutorSelectTest {
     @Ignore("今は通らない。")
     public void testSelectByTimestamp() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2), 22, (float) 23, 244, (short) 52, true, false, true, false),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2), 22,  23F, 244, (short) 52, true, false, true, false),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_MEMBERS where TIMESTAMP_COL = :timestampCol "
                 , Arrays.asList("timestampCol", "2015-04-01 22:22:56"));
@@ -159,9 +159,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testStringIncludeQuotation() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "strin'g'2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22, (float) 23.3, 244.4, (short) 52, true, true, true, true),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "strin'g'2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22,  23.3F, 244.4, (short) 52, true, true, true, true),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
 
         SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_MEMBERS where STRING_COL = :stringCol"
@@ -177,9 +177,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testNoQuotation() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22, (float) 23.3, 244.4, (short) 52, true, true, true, true),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22,  23.3F, 244.4, (short) 52, true, true, true, true),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
 
         try {
@@ -199,9 +199,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testNotEnoughQuotation() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22, (float) 23.3, 244.4, (short) 52, true, true, true, true),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22,  23.3F, 244.4, (short) 52, true, true, true, true),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
 
         try {
@@ -221,9 +221,9 @@ public class SqlExecutorSelectTest {
     @Test
     public void testStringHasNoContent() {
         VariousDbTestHelper.setUpTable(
-                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12, (float) 13.3, 144.4, (short) 51, true, true, true, true),
-                new Members(2L, "", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22, (float) 23.3, 244.4, (short) 52, true, true, true, true),
-                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
+                new Members(1L, "string1", DateUtil.getDate("20140101"), getDate("20150401121156"), new BigDecimal(1.1111111111), 12,  13.3F, 144.4, (short) 51, true, true, true, true),
+                new Members(2L, "", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2.1111111111), 22,  23.3F, 244.4, (short) 52, true, true, true, true),
+                new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32,  33.3F, 344.4, (short) 53, true, true, true, true)
         );
 
         try {
@@ -231,7 +231,7 @@ public class SqlExecutorSelectTest {
                     , Arrays.asList("stringCol", ""));
             fail("ここはとおらない");
         } catch (NumberFormatException e) {
-            assertEquals(NumberFormatException.class, e.getClass());
+            assertEquals("message", e.getMessage());
         }
     }
 
