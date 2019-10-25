@@ -28,6 +28,7 @@ import static org.junit.Assert.*;
 @RunWith(DatabaseTestRunner.class)
 public class SqlExecutorSelectTest {
 
+    private SqlExecutor sqlExecutor = new SqlExecutor();
     @Rule
     public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("db-default.xml");
 
@@ -72,13 +73,9 @@ public class SqlExecutorSelectTest {
                 new Members(2L, "string2", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal(2), 22, (float) 23, 244, (short) 52, true, false, true, false),
                 new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal(3.1111111111), 32, (float) 33.3, 344.4, (short) 53, true, true, true, true)
         );
-        List<String> args = Arrays.asList("id", "2", "stringCol", "'string2'",
-                "dateCol", "2014-02-02",
-                "bigDecimalCol", "2", "integerCol", "22", "floatCol", "23", "doubleCol", "244", "shortCol", "52",
-                "bool1", "true", "bool2", "false", "bool3", "TRUE", "bool4", "FaLsE"
-        );
-        SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_MEMBERS " +
+
+        SqlResultSet rs = sqlExecutor.executeQuery(
+                "select * from DAO_MEMBERS " +
                         "where MEMBER_ID = :id " +
                         "and STRING_COL = :stringCol " +
                         "and DATE_COL = :dateCol " +
@@ -91,7 +88,20 @@ public class SqlExecutorSelectTest {
                         "and bool2 = :bool2 " +
                         "and bool3 = :bool3 " +
                         "and bool4 = :bool4 "
-                , args);
+                , Arrays.asList(
+                        "id", "2",
+                        "stringCol", "'string2'",
+                        "dateCol", "2014-02-02",
+                        "bigDecimalCol", "2",
+                        "integerCol", "22",
+                        "floatCol", "23",
+                        "doubleCol", "244",
+                        "shortCol", "52",
+                        "bool1", "true",
+                        "bool2", "false",
+                        "bool3", "TRUE",
+                        "bool4", "FaLsE"
+                ));
 
         assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
         assertThat(rs.get(0).getString("STRING_COL"), is("string2"));
@@ -110,15 +120,19 @@ public class SqlExecutorSelectTest {
                 new Members(2L, "true", DateUtil.getDate("20140202"), getDate("20150401222256"), new BigDecimal("2.1111111111"), 22, (float) 23.5, 244.4, (short) 52, true, true, true, true),
                 new Members(3L, "string3", DateUtil.getDate("20140303"), getDate("20150401123356"), new BigDecimal("3.1111111111"), 32, (float) 33.5, 344.4, (short) 53, true, true, true, true)
         );
-        List<String> args = Arrays.asList("id", "2", "stringCol", "'true'", "bigDecimalCol", "2.1111111111", "floatCol", "23.5", "doubleCol", "244.4");
-        SqlExecutor sqlExecutor = new SqlExecutor();
-        SqlResultSet rs = sqlExecutor.executeQuery("select * from DAO_MEMBERS " +
+        SqlResultSet rs = sqlExecutor.executeQuery(
+                "select * from DAO_MEMBERS " +
                         "where MEMBER_ID = :id " +
                         "and STRING_COL = :stringCol " +
                         "and BIG_DECIMAL_COL = :bigDecimalCol " +
                         "and FLOAT_COL = :floatCol " +
                         "and DOUBLE_COL = :doubleCol "
-                , args);
+                , Arrays.asList("id", "2",
+                        "stringCol", "'true'",
+                        "bigDecimalCol", "2.1111111111",
+                        "floatCol", "23.5",
+                        "doubleCol", "244.4"
+                ));
 
         assertThat(rs.get(0).getLong("MEMBER_ID"), is(2L));
         assertThat(rs.get(0).getString("STRING_COL"), is("true"));
