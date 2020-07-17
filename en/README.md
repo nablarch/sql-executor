@@ -1,24 +1,24 @@
 # sql-executor
 
-Nablarch特殊構文を含むSQLファイルを対話的に実行するツールです。
+Tool for interactively executing SQL files containing Nablarch special syntax.
 
-## 前提条件
+## Prerequisites
 
-下記ブラウザでの実行にのみ対応しています。
+It is compatible with only the following browsers.
 * FireFox
 * Chrome
 
 ## Getting Started
 
-1. 本ツールを任意のディレクトリにcloneしてください。
-1. 使用するRDBMSに応じて設定変更を行ってください。
-  1. デフォルト設定
+1. Clone the tool to a directory of your choice.
+1. Make changes to the configuration according to the RDBMS that is used.
+1. Default configuration
     * URL・・・jdbc:h2:./h2/db/SAMPLE
-    * ユーザ名・・・SAMPLE
-    * パスワード・・・SAMPLE
-  1. 接続URLやユーザ、パスワードを変更する場合、以下のファイルを修正してください。
+    * User name・・・SAMPLE
+    * Password・・・SAMPLE
+1. To change the connection URL, user, or password, modify the following file.
     * src/main/resources/sqle-db.config
-  1. JDBCドライバを変更する場合、以下のファイルを修正してくだささい。
+1. To change the JDBC driver, modify the following file. 
     * src/main/resources/sqle-db.xml
-1. 以下のバッチファイルを実行し、アプリケーションを起動してください(ブラウザが起動します)。
+1. Run the following batch file to launch the application (the browser will launch):
   * nse-web.bat
