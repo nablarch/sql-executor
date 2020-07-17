@@ -21,4 +21,4 @@ It is compatible with only the following browsers.
 1. To change the JDBC driver, modify the following file. 
     * src/main/resources/sqle-db.xml
 1. Run the following batch file to launch the application (the browser will launch):
-  * nse-web.bat
+    * nse-web.bat
