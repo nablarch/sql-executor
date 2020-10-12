@@ -5,7 +5,7 @@
 
   <groupId>com.nablarch.tool</groupId>
   <artifactId>sql-executor</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <packaging>jar</packaging>
 
   <scm>
@@ -17,7 +17,7 @@
   <parent>
     <groupId>com.nablarch</groupId>
     <artifactId>nablarch-parent</artifactId>
-    <version>5u15</version>
+    <version>5u16</version>
   </parent>
 
   <dependencies>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>com.nablarch.framework</groupId>
-      <artifactId>nablarch-testing-jetty6</artifactId>
+      <artifactId>nablarch-testing-jetty9</artifactId>
     </dependency>
     <dependency>
       <groupId>com.nablarch.framework</groupId>
@@ -46,6 +46,18 @@
       <artifactId>commons-dbcp</artifactId>
       <version>1.4</version>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.nablarch.dev</groupId>
+      <artifactId>nablarch-test-support</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
     </dependency>
 
 <!-- 使用するRDBMSにあわせて、下記JDBCドライバの dependency を更新してください。 -->
@@ -74,6 +86,48 @@
             <argument>-g</argument>
           </arguments>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <!-- jarを生成する -->
+          <execution>
+            <id>make-executable-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>${project.artifactId}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <mainClass>nablarch.fw.launcher.Main</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+
+          <!-- jar, batが含まれたzipを生成する -->
+          <execution>
+            <id>make-zip</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>${project.artifactId}</finalName>
+              <descriptors>
+                <descriptor>src/assembly/distribution.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration  ./component-configuration.xsd">
 
   <!-- データベース接続設定 -->
-  <config-file file="db.config" />
+  <config-file file="sqle-db.config" />
 
-  <import file="db.xml" />
+  <import file="sqle-db.xml" />
   <import file="date.xml" />
 
   <!-- データベースコネクションを実現するハンドラ -->
@@ -39,6 +39,30 @@
     </property>
   </component>
 
-  <component name="httpServerFactory" class="nablarch.fw.web.httpserver.HttpServerFactoryJetty6"/>
+  <component name="httpServerFactory" class="nablarch.fw.web.httpserver.HttpServerFactoryJetty9"/>
+
+  <component name="webFrontController"
+             class="nablarch.fw.web.servlet.WebFrontController">
+    <property name="handlerQueue">
+      <list>
+        <component class="nablarch.fw.web.handler.HttpCharacterEncodingHandler"/>
+        <component class="nablarch.fw.handler.GlobalErrorHandler"/>
+        <component class="nablarch.fw.web.handler.HttpResponseHandler"/>
+        <component class="nablarch.fw.web.handler.ForwardingHandler"/>
+
+        <component class="nablarch.fw.web.handler.HttpErrorHandler" >
+          <property name="defaultPages">
+            <map>
+              <entry key="4.." value="servlet:///error.html" />
+              <entry key="5.." value="servlet:///error.html" />
+            </map>
+          </property>
+        </component>
+        <component-ref name="dbConnectionManagementHandler" />
+        <component-ref name="transactionManagementHandler"   />
+        <component class="nablarch.tool.handler.SqlExecutor"/>
+      </list>
+    </property>
+  </component>
 
 </component-configuration>
