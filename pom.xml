@@ -5,7 +5,7 @@
 
   <groupId>com.nablarch.tool</groupId>
   <artifactId>sql-executor</artifactId>
-  <version>5-NEXT-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <scm>
