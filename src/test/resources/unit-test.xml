@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ../../main/resources/component-configuration.xsd">
+
+    <!-- db-default設定読み込み -->
+    <import file="db-default.xml"/>
+    <!-- 業務日付用コンポーネント設定 -->
+    <config-file file="date.config"/>
+    <import file="date.xml" />
+</component-configuration>
