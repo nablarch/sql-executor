@@ -29,7 +29,7 @@ public class SqlExecutorSelectTest {
 
     private SqlExecutor sqlExecutor = new SqlExecutor();
     @Rule
-    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("db-default.xml");
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("unit-test.xml");
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
