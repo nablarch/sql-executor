@@ -20,7 +20,13 @@
     <version>5-NEXT-SNAPSHOT</version>
   </parent>
 
-  <!-- Nablarch 5系と6系にて同じ手順で利用できるようにするため、6系でのみ検証対象のDBも独自に検証する -->
+  <!--
+    以下は本ツールの開発時に実行しているCI向けのprofileである（ツール利用時には不要であるため削除してもよい）。
+    本ツールはNablarch 5をベースに作成されている。Nablarch 6が既にリリースされいるが開発環境で利用するツールであることから、無理にマイグレーションを行っていない。
+    ただし、Nablarch 6をベースとしたアプリケーションの開発にも使用できるよう、動作確認対象のDBはNablarch 6に合わせている。
+    CIで使用する各DB用のprofileはnablarch-parentに定義されているが、本ツールでは上記の通りNablarch 5のnablarch-parentを親としているため、profileが不足している。
+    以下は不足しているprofileを利用するために定義している。
+  -->
   <profiles>
     <profile>
       <id>postgres174</id>
