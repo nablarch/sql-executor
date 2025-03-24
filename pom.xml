@@ -20,6 +20,38 @@
     <version>5-NEXT-SNAPSHOT</version>
   </parent>
 
+  <!-- Nablarch 5系と6系にて同じ手順で利用できるようにするため、6系でのみ検証対象のDBも独自に検証する -->
+  <profiles>
+    <profile>
+      <id>postgres174</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>42.7.2</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <properties>
+        <junit.additionalArgLine.db-profile>-Ddb-profile=postgres174</junit.additionalArgLine.db-profile>
+      </properties>
+    </profile>
+    <profile>
+      <id>db2121</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.ibm.db2</groupId>
+          <artifactId>jcc</artifactId>
+          <version>12.1.0.0</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <properties>
+        <junit.additionalArgLine.db-profile>-Ddb-profile=db2121</junit.additionalArgLine.db-profile>
+      </properties>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>com.nablarch.profile</groupId>
