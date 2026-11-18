@@ -2,10 +2,12 @@
 
 Nablarch特殊構文を含むSQLファイルを対話的に実行するツールです。
 
+DB設定、ビルド、配布、操作方法の詳細は、解説書の[Nablarch SQL Executor](https://nablarch.github.io/docs/LATEST/doc/development_tools/toolbox/SqlExecutor/SqlExecutor.html)を参照してください。
+
 ## 前提条件
 
 下記ブラウザでの実行にのみ対応しています。
-* FireFox
+* Firefox
 * Chrome
 
 ## Getting Started
@@ -21,5 +23,6 @@ Nablarch特殊構文を含むSQLファイルを対話的に実行するツール
   1. JDBCドライバを変更する場合、以下のファイルを修正してくだささい。
       * pom.xml
       * src/main/resources/db.xml
+1. Java 11、17、21でビルドする場合の設定は、解説書の[Javaバージョンの設定](https://nablarch.github.io/docs/LATEST/doc/development_tools/toolbox/SqlExecutor/SqlExecutor.html#java)を参照してください。
 1. 以下のコマンドを実行し、アプリケーションを起動してください。
     * mvn compile exec:java
